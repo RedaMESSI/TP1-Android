@@ -31,17 +31,19 @@ class FormActivity : AppCompatActivity() {
                 description = descriptionText.text.toString()
             )
 
+
+
             intent.putExtra("task", newTask)
             setResult(RESULT_OK, intent)
             finish()
 
-//        addTask.setOnClickListener {
-//            val newTask = Task(id = UUID.randomUUID().toString(), title = "New Task !")
-//
-//
-//            intent.putExtra("task", newTask)
-//            setResult(RESULT_OK, intent)
-//           finish()
+//            btn.setOnClickListener{
+//                val title = editTextTitle.text.toString()
+//                val description = editTextDescription.text.toString()
+//                val newTask = Task(id = id, title = title, description = description);
+//                intent.putExtra("task", newTask)
+//                setResult(RESULT_OK, intent);
+//                finish()
 //        }
 
         }

@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tpdjebrilbenamarredamessi.R
 import com.example.tpdjebrilbenamarredamessi.tasklist.dataClassTask.Task
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import form.FormActivity
+import kotlinx.coroutines.launch
 import java.util.*
 
 class TaskListFragment : Fragment() {
@@ -28,13 +30,15 @@ class TaskListFragment : Fragment() {
         taskList = taskList + task
         refreshList()
     }
+    val updateTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val task = result.data?.getSerializableExtra("task") as? Task
+            if (task != null) {
+                taskList = taskList.map {
+                    if (it.id == task.id) task else it
 
-    val modifyTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-    val intent = intent(context, FormActivity::class.java)
-        intent.putExtra("task", task)
-        modifyTask.launch(intent)
-        refreshList()
-    }
+                }
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,6 +57,7 @@ class TaskListFragment : Fragment() {
         adapter.currentList = taskList;
         recyclerView.adapter = adapter
 
+
         val addButton = view.findViewById<FloatingActionButton>(R.id.floatingActionButton)
         addButton.setOnClickListener {
 
@@ -63,6 +68,14 @@ class TaskListFragment : Fragment() {
 
         adapter.onClickDelete = { task ->
             taskList = taskList - task
+            refreshList()
+        }
+
+
+        adapter.onClickEdit = { task ->
+            val intent = Intent(context, FormActivity::class.java)
+            intent.putExtra("task", task)
+            updateTask.launch(intent)
             refreshList()
         }
     }

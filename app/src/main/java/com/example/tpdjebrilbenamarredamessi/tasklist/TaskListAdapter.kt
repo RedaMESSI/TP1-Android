@@ -3,6 +3,7 @@ package com.example.tpdjebrilbenamarredamessi.tasklist
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -12,18 +13,19 @@ import com.example.tpdjebrilbenamarredamessi.tasklist.dataClassTask.Task
 class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.TaskViewHolder>() {
     var currentList: List<Task> = emptyList()
     var onClickDelete: (Task) -> Unit = {}
-    var onClickModify: (Task) -> = {
-    }
+    var onClickEdit: (Task) -> Unit = {}
 
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textView = itemView.findViewById<TextView>(R.id.task_title);
         val descriptionTextView= itemView.findViewById<TextView>(R.id.task_description);
         val deleteButton = itemView.findViewById<ImageButton>(R.id.imageButton)
+        val updateButton = itemView.findViewById<Button>(R.id.edit)
         fun bind(task: Task) {
             textView.text = task.title
             descriptionTextView.text = task.description
             deleteButton.setOnClickListener{ onClickDelete(task) }
+            updateButton.setOnClickListener{ onClickEdit(task) }
         }
 
     }
