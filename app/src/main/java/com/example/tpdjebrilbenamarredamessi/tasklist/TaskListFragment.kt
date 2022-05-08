@@ -12,9 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tpdjebrilbenamarredamessi.R
 import com.example.tpdjebrilbenamarredamessi.tasklist.dataClassTask.Task
+import com.example.tpdjebrilbenamarredamessi.databinding.FragmentTaskListBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import form.FormActivity
+import com.example.tpdjebrilbenamarredamessi.network.Api
 import kotlinx.coroutines.launch
+import androidx.fragment.app.viewModels
 import java.util.*
 
 class TaskListFragment : Fragment() {
@@ -24,13 +27,18 @@ class TaskListFragment : Fragment() {
         Task(id = "id_2", title = "Task 2"),
         Task(id = "id_3", title = "Task 3")
     )
-    val createTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val task = result.data?.getSerializableExtra("task") as? Task
-            ?: return@registerForActivityResult
-        taskList = taskList + task
-        refreshList()
-    }
-    val updateTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private val viewModel: TasksListViewModel by viewModels()
+
+
+    val createTask =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val task = result.data?.getSerializableExtra("task") as? Task
+                ?: return@registerForActivityResult
+            taskList = taskList + task
+            refreshList()
+        }
+    val updateTask =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val task = result.data?.getSerializableExtra("task") as? Task
             if (task != null) {
                 taskList = taskList.map {
@@ -67,9 +75,12 @@ class TaskListFragment : Fragment() {
 
 
         adapter.onClickDelete = { task ->
-            taskList = taskList - task
-            refreshList()
+            lifecycleScope.launch {
+                viewModel.create(task)
+            }
+            adapter.submitList(taskList)
         }
+
 
 
         adapter.onClickEdit = { task ->
@@ -84,4 +95,26 @@ class TaskListFragment : Fragment() {
         adapter.currentList = taskList
         adapter.notifyDataSetChanged()
     }
+
+//        lifecycleScope.launch {
+//            viewModel.tasksStateFlow.collect { newList ->
+//                taskList = newList
+//                adapter.submitList(taskList)
+//            }
+//        }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            val userInfo = Api.userWebService.getInfo().body()!!
+            val userInfos = binding.textView
+           userInfos.text = "${userInfo.firstName} ${userInfo.lastName}"
+
+            lifecycleScope.launch {
+                mySuspendMethod()
+            }
+        }
+
+    }
+
 }
