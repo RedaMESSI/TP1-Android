@@ -3,6 +3,8 @@ package com.example.tpdjebrilbenamarredamessi.tasklist
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import coil.load
+import coil.transform.CircleCropTransformation
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tpdjebrilbenamarredamessi.R
 import com.example.tpdjebrilbenamarredamessi.tasklist.dataClassTask.Task
+import com.example.tpdjebrilbenamarredamessi.user.UserInfoActivity
 import com.example.tpdjebrilbenamarredamessi.databinding.FragmentTaskListBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import form.FormActivity
@@ -73,6 +76,11 @@ class TaskListFragment : Fragment() {
             createTask.launch(intent)
         }
 
+        binding.avatarImageView.setOnClickListener {
+            val intent = Intent(context, UserInfoActivity::class.java)
+            startActivity(intent)
+        }
+
 
         adapter.onClickDelete = { task ->
             lifecycleScope.launch {
@@ -110,8 +118,10 @@ class TaskListFragment : Fragment() {
             val userInfos = binding.textView
            userInfos.text = "${userInfo.firstName} ${userInfo.lastName}"
 
-            lifecycleScope.launch {
-                mySuspendMethod()
+            binding.avatarImageView.load("https://goo.gl/gEgYUd") {
+                crossfade(true)
+                transformations(CircleCropTransformation())
+            }
             }
         }
 
